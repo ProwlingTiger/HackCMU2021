@@ -152,7 +152,7 @@ def wireIntersect(wires, newWire):
                               or w < a < y or w < c < y or w > a > y or w > c > y)
             elif (abs((w-a)/(c-a) - (x-b)/(d-b) ) <= 10e-5):
                 #same line! check if (w,x) or (y,z) on newWire
-                return 0 <= (w-a)/(c-a) <= 1 or 0 <= (x-b)/(d-b) <= 1
+                return 0 < (w-a)/(c-a) < 1 or 0 < (x-b)/(d-b) < 1
             else: continue
         
         s = (j*w-i*x - a*j + b*i) / (g*j - h*i)
@@ -171,6 +171,8 @@ def wireIntersect(wires, newWire):
 
     return False
 def underWire(wires):
+    if (wires[-1][1] == -1): wires.pop()
+
     validSqs = []
 
     for [(a,b),(c,d)] in wires:
@@ -263,7 +265,7 @@ class Player(pygame.sprite.Sprite):
             self.getImage(self.dir)
 
         #restart
-        if key == K_r:
+        if key == K_BACKSPACE:
             self.reset()
         
         #drop item
@@ -285,14 +287,15 @@ class Player(pygame.sprite.Sprite):
             if item == 'F': self.powered.append((self.coords[0] + self.dir[0],self.coords[1] + self.dir[1]))
 
             #if a pole is put underneath a wire, split the wire into two
-            place = (self.coords[0] + self.dir[0],self.coords[1] + self.dir[1])
-            newWires = copy.deepcopy(self.wires)
-            for wire in self.wires:
-                if place in underWire([wire]):
-                    [a,b] = wire
-                    newWires.remove(wire)
-                    newWires.extend([[a, place], [b,place]])
-            self.wires = newWires
+            if item == 'P':
+                place = (self.coords[0] + self.dir[0],self.coords[1] + self.dir[1])
+                newWires = copy.deepcopy(self.wires)
+                for wire in self.wires:
+                    if place in underWire([wire]):
+                        [a,b] = wire
+                        newWires.remove(wire)
+                        newWires.extend([[a, place], [b,place]])
+                self.wires = newWires
         
         #start/end wires
         if key == K_SPACE:
@@ -512,7 +515,7 @@ class Game():
             global grid
             #RAMP UP IN DIFFICULTY
             self.level += 1
-            self.turnCtr += self.level*10
+            self.turnCtr += self.level*7
 
             newH = self.level
             newF = random.randint(0, self.level//2)
