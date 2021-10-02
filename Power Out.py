@@ -22,7 +22,7 @@ pygame.display.set_caption("POWER")
 res = 750
 BG = pygame.display.set_mode((res, res))
 
-onMenu = False
+onMenu = True
 gameEnd = False
 font = pygame.font.SysFont('Corbel',80)
 smallfont = pygame.font.SysFont('Corbel',38)
